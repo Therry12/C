@@ -20,12 +20,12 @@ int get_line_length(char* line) {
 }
 
 // Получает значени из строки в конфиге, которая передается в аргумент
-void get_value_from_line(char* line, const int line_size, char dst_buf[], const int dst_buf_size) {
+void get_value_from_line(const char* line, const int line_size, char dst_buf[], const int dst_buf_size) {
     int i = 0, j = 0;
 
     for (i = 0; i < line_size; i++) {
         if (line[i] == '=') {
-            j = ++i;   // Увеличеваем i что бы не записывать позицию =
+            j = ++i;   // Увеличиваем i что бы не записывать позицию =
             break;     // Используем цикл для нахожения позиции =
         }
     }
@@ -41,13 +41,8 @@ void set_player_name(PLAYER* player, const char* name) {
         return;
     }
 
-    if (name[0] == '\0') {
+    if (name[0] == '\0' || name[0] == '\n' || name[0] == ' ') {
         puts("Имя пустое! Заполните поле имени");
-        return;
-    }
-
-    if (name[0] == ' ') {
-        puts("Имя не может начинаться с пробела! Измените имя");
         return;
     }
 
@@ -57,4 +52,30 @@ void set_player_name(PLAYER* player, const char* name) {
 
 char* get_player_name(PLAYER* player) {
     return player->player_name;
+}
+
+void input_name(char buf[], const int buf_size) {
+    int i = 0;
+
+    printf("Введите ваше имя(ctrl+d для завершения): ");
+    while (i < buf_size) {
+        buf[i] = getchar();
+        i++;
+    }
+}
+
+void init_game() {
+    char config_buf[BUF_SIZE] = {};
+    char player_name[BUF_SIZE] = {};
+    FILE* fptr = fopen("../config", "r");
+    PLAYER instance;
+
+    fgets(config_buf, BUF_SIZE, fptr);
+    input_name(player_name, BUF_SIZE);
+    set_player_name(&instance, player_name);
+    get_value_from_line(config_buf, get_line_length(config_buf), player_name, BUF_SIZE);
+
+    printf("Ваше имя: %s\n", get_player_name(&instance));
+
+    fclose(fptr);
 }
