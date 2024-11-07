@@ -1,7 +1,9 @@
 #include <stdio.h>
+#define PLAYER_NAME_SIZE 128
+
 
 typedef struct {
-    char* player_name;
+    char player_name[PLAYER_NAME_SIZE];
     int player_health;
 } PLAYER;
 
@@ -10,3 +12,5 @@ void get_value_from_line(char* line, const int line_size, char dst_buf[], const 
 int get_line_length(char line[]);
 
 void set_player_name(PLAYER* player, const char* player_name);
+char* get_player_name(PLAYER* player);
+

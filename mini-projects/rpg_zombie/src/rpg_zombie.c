@@ -1,7 +1,6 @@
 #include "game.h"
 
 #include <stdio.h>
-#include <string.h>
 
 #define BUF_SIZE 128
 
@@ -15,5 +14,9 @@ int main(void) {
     get_value_from_line(buf, get_line_length(buf), player_name, BUF_SIZE);
 
     set_player_name(&instance, player_name);
+    printf("%s\n", get_player_name(&instance));
+
+
+    fclose(fptr);
     return 0;
 }

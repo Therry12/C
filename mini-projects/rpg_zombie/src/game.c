@@ -36,7 +36,23 @@ void get_value_from_line(char* line, const int line_size, char dst_buf[], const 
 }
 
 void set_player_name(PLAYER* player, const char* name) {
-    strcpy(player->player_name, name);
+    if (name == NULL) {
+        puts("Имя = NULL");
+        return;
+    }
+
+    if (name[0] == '\0') {
+        puts("Имя пустое! Заполните поле имени");
+        return;
+    }
+
+    if (name[0] == ' ') {
+        puts("Имя не может начинаться с пробела! Измените имя");
+        return;
+    }
+
+    strncpy(player->player_name, name, sizeof(player->player_name) - 1);
+    player->player_name[sizeof(player->player_name) - 1] = '\0';
 }
 
 char* get_player_name(PLAYER* player) {
