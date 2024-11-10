@@ -12,6 +12,17 @@ void print_buf(char* buf, const int buf_size) {
     }
 }
 
+char* compare_types(int type) {
+    char* str;
+
+    switch (type) {
+    case 1 :
+        str = "player_name";
+        break;
+    }
+    return str;
+}
+
 int get_line_length(char* line) {
     int line_length = 0;
 
@@ -19,7 +30,7 @@ int get_line_length(char* line) {
     return line_length;
 }
 
-int lines_quanity(FILE* fptr) {
+int lines_quanity(FILE* fptr) {   // #TODO: Если в конфиге есть пустые строки, то они будут также засчитаны
     if (fptr == NULL) {
         return -1;
     }
@@ -29,23 +40,52 @@ int lines_quanity(FILE* fptr) {
     char buf[buf_size];
 
     char ch;
-    while((ch = fgetc(fptr)) != EOF) {
+    while ((ch = fgetc(fptr)) != EOF) {
         if (ch == '\n') {
             lines_quainity++;
         }
     }
 
-    if (ch > 0 || lines_quainity == 0 && ch != '\n') {
+    if (ch > 0 || lines_quainity == 0 || ch != '\n') {
         lines_quainity++;
     }
     return lines_quainity;
 }
 
-int find_value_line(FILE* fptr) {
-    int line = 0;
+void buf_clean(char* buf, int buf_size) {
+    for (int i = 0; i < buf_size; i++) {
+        buf[i] = 0;
+    }
+}
 
+void find_value_line(FILE* fptr, int type, char dst[], const int dst_size) {
+    if (fptr == NULL) {
+        puts("Указатель на файл не удалось прочитать!");
+        return;
+    }
 
-    return line;
+    char line[BUF_SIZE] = {};
+    char key_buf[BUF_SIZE] = {};
+    char tmp_buf[BUF_SIZE] = {};
+
+    rewind(fptr);
+
+    int i = 0;
+    while (fgets(tmp_buf, BUF_SIZE, fptr)) {
+        for (i = 0; tmp_buf[i] != '='; i++) {
+            key_buf[i] = tmp_buf[i];
+        }
+
+        if (dst_size < i) {
+            puts("Dst buf size is too small");
+            return;
+        }
+        if (strncmp(tmp_buf, "player_name", i) == 0) {
+            puts("in cmp");
+            strncpy(dst, tmp_buf, i);
+            break;
+        }
+    }
 }
 
 // Получает значениe из строки в конфиге, которая передается в аргумент
@@ -92,21 +132,34 @@ void input_player_name(char buf[], const int buf_size) {
     }
 }
 
+int check_config_valid(FILE* fptr) {
+    int lines_count = lines_quanity(fptr);
+    if (lines_count <= 2) {
+        return 1;
+    }
+
+    return 0;
+}
+
 void init_game() {
     char config_buf[BUF_SIZE] = {};
     char player_name[BUF_SIZE] = {};
+    char line[BUF_SIZE] = {};
     FILE* fptr = fopen("../config", "r");
     PLAYER instance;
 
+    if (check_config_valid(fptr)) {
+        puts("Конфиг не валидный!");
+        return;
+    }
+
+    find_value_line(fptr, Eplayer_name, line, BUF_SIZE);
+    printf("%s\n", line);
     fgets(config_buf, BUF_SIZE, fptr);
 #if 0
     input_player_name(player_name, BUF_SIZE);
-#endif
     get_value_from_line(config_buf, get_line_length(config_buf), player_name, BUF_SIZE, Eplayer_name);
     set_player_name(&instance, player_name);
-
-    printf("Ваше имя: %s\n", get_player_name(&instance));
-
-    printf("%d\n", lines_quanity(fptr));
+#endif
     fclose(fptr);
 }
