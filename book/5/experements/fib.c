@@ -1,10 +1,5 @@
 // Программа для нахождения числа фибоначчи до 100
-
 #include <stdio.h>
-
-
-
-// 1 2 3 4
 
 long long fib_loop(long long number) {
     long long fib = 0, fib_1 = 0, fib_2 = 1;
