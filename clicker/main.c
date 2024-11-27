@@ -4,16 +4,29 @@
 
 #include <stdio.h>
 
+#define MAX_CLICKER 10
+
 static int increment() {
     static int i = 0;
-    g_print("Clicked %d times: \n", i++);
-    return i;
+    i++;
+    if (i > MAX_CLICKER) {
+        g_print("Limit reached!\n");
+        return -1;
+    } else {
+        g_print("Clicked %d times: \n", i);
+        return i;
+    }
 }
 
 static void clicks_to_str(GtkLabel* label) {
     char str[100];
-    sprintf(str, "Clicked: %d", increment());
-    gtk_label_set_text(label, str);
+    int inc = increment();
+    if (inc < 0) {
+        gtk_label_set_text(label, "Limit reached!\n");
+    } else {
+        sprintf(str, "Clicked: %d", inc);
+        gtk_label_set_text(label, str);
+    }
 }
 
 static void activate(GtkApplication* app) {
